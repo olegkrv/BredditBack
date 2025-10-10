@@ -16,6 +16,3 @@ public class BredditApplication {
 	}
 }
 
-/*
-У меня в руках сачок
-*/
