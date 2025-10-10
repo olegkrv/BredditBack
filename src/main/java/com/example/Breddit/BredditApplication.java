@@ -15,7 +15,3 @@ public class BredditApplication {
 		SpringApplication.run(BredditApplication.class, args);
 	}
 }
-
-/*
-Я у мамы дурачок
-*/
