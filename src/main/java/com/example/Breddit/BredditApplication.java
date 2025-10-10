@@ -19,4 +19,4 @@ public class BredditApplication {
 /*
 У меня в руках сачок,
 Я у мамы дурачок
- */
+*/
