@@ -73,13 +73,4 @@ public class UserController{
     public String logOut(){
         return service.logOut(CURRENT);
     }
-
-    
-    
-    /*@DeleteMapping("delete_works/{email}")
-    public String deletePosts(@PathVariable String email, @RequestBody ArrayList<String> deletable_works){
-        User user = service.deletePosts(email, deletable_works);
-        if (user != null) return "".format("%s теперь не носит бремя ненужных книг!", user.getId());
-        else return "Писателя с такой фамилией не существует, либо таких книг за его авторством, либо допущена опечатка.";
-    }*/
 }
