@@ -11,7 +11,7 @@ import com.example.Breddit.models.Post;
 public interface PostService {
     List<Post> findAllPosts();
 
-    void addPost(Post post);
+    void addPost(Post post, String title);
 
     Post updatePost(Post post);
 

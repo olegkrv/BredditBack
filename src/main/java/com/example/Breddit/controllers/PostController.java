@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.coyote.BadRequestException;
+import org.hibernate.internal.util.SubSequence;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,7 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException.BadRequest;
 
 import com.example.Breddit.models.Post;
+import com.example.Breddit.models.Sub;
 import com.example.Breddit.models.User;
+import com.example.Breddit.service.SubService;
 import com.example.Breddit.service.UsersService;
 import com.example.Breddit.service.JPA.PostServiceJPA;
 
@@ -28,27 +31,32 @@ import lombok.RequiredArgsConstructor;
 
 
 @RestController
-@RequestMapping("/br/posts")
+@RequestMapping("/br/")
 @RequiredArgsConstructor
 @CrossOrigin("*")
 public class PostController {
     private final PostServiceJPA service;
+    private final SubService sub_service;
 
     private final UserController user_controller;
     // private final UsersService user_service;
 
-    @GetMapping
+    @GetMapping("/posts")
     public List<Post> findAllPosts(){
         return service.findAllPosts();
     }
 
-    @PostMapping("/add_post")
-    public String addPost(@RequestBody Post post){
+    @PostMapping("{title}/add_post")
+    public String addPost(@RequestBody Post post, @PathVariable String title){
         try{
+           if (title == null) return "Вы не выбрали Саббреддит!";
+           else if (sub_service.findByTitle(title) == null) return "Такого Саббреддита не существует!"; 
            if (user_controller.CURRENT.getId() == null) return "Необходимо войти в аккаунт, чтобы сделать пост!";
            
         else if (post.getTitle().split(" ").length == 0 || post.getTitle().equals("")) return "Заголовок не может быть пустым!";
-        service.addPost(post);
+        
+        service.addPost(post, title);
+        
         System.out.println(post.getTitle().split("") + "=="+post.getTitle().split("").length + "==" + (post.getTitle().split("").length == 0));
         return "Пост успешно добавлен!"; 
         }
@@ -62,7 +70,7 @@ public class PostController {
         return service.updatePost(post);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("{title}/{id}")
     public Post findById(@PathVariable Long id){
         return service.findById(id);
     }
@@ -81,4 +89,5 @@ public class PostController {
     }
         return "Поста с таким id не существует!";
     }
+    
 }

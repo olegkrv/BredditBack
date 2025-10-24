@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.example.Breddit.controllers.UserController;
 import com.example.Breddit.models.CurrentUser;
 import com.example.Breddit.models.Post;
+import com.example.Breddit.models.Sub;
 import com.example.Breddit.models.User;
 import com.example.Breddit.repository.PostReposiroty;
 import com.example.Breddit.service.PostService;
@@ -24,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class PostServiceJPA implements PostService{
     private final PostReposiroty reposiroty;
     private final UsersServiceJPA user_service;
+    private final SubServiceJPA sub_service;
     private final UserController user_controller;
 
     @Override
@@ -32,7 +34,7 @@ public class PostServiceJPA implements PostService{
     }
 
     @Override
-    public void addPost(Post post){
+    public void addPost(Post post, String title){
         post.setAuthor(user_controller.CURRENT.getId());
         post.setDate(Instant.now());
 
@@ -42,9 +44,13 @@ public class PostServiceJPA implements PostService{
 
         User posting_man = user_service.findUserbyId(user_controller.CURRENT.getId());
         posting_man.addPost(new_post_id);
-        user_service.saveUser(posting_man);
-            
-
+        user_service.updateUser(posting_man);
+        posting_man = null;
+        
+        Sub this_sub = sub_service.findByTitle(title);
+        this_sub.addPost(new_post_id);
+        sub_service.updateSub(this_sub);
+        this_sub = null;
           
     }
 

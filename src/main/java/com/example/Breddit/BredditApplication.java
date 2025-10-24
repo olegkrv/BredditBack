@@ -15,3 +15,5 @@ public class BredditApplication {
 		SpringApplication.run(BredditApplication.class, args);
 	}
 }
+
+
