@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.Breddit.BredditApplication;
 import com.example.Breddit.models.CurrentUser;
 import com.example.Breddit.models.User;
+import com.example.Breddit.repository.SubRepository;
 import com.example.Breddit.service.UsersService;
 
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,8 @@ public class UserController{
     // @NonNull List<User>
     public CurrentUser CURRENT = new CurrentUser();
     private final UsersService service;
+    private final SubRepository sub_repository;
+
     @GetMapping
     public List<User> findAllUsers(){
         //System.out.println("((( Заходи не бойся, выходи не плачь )))");
@@ -41,7 +44,7 @@ public class UserController{
         if (service.saveUser(user) != null){
             CURRENT.setUser(user);
             return "Пользователь успешно добавлен!";}
-        else return "".format("Почта, как у %s уже есть в базе данных!", user.getNickname());
+        else return "Эта почта уже используется!";
         
     }
 
@@ -55,10 +58,23 @@ public class UserController{
        return service.updateUser(user);
     }
 
-    @DeleteMapping("delete_user/{id}")
-    public String deleteUser(@PathVariable Long id){
-        if (service.deleteUser(id)) return "Пользователь успешно удалён.";
-        else return "Пользователя с таким id не существует.";
+    @DeleteMapping("/delete_user")
+    public String deleteUser(){
+        System.out.println(CURRENT.getId() + "==" + !(CURRENT.getAdmined_subs().isEmpty()) + "==" + CURRENT.getAdmined_subs());
+        if (CURRENT.getId() !=null && !(CURRENT.getAdmined_subs().isEmpty())) {
+            
+            String message = "Вы не уможете удалить свой аккаунт, так как являетесь главным админом в следующих Саббреддитах:";
+            for (Long sub_id: CURRENT.getAdmined_subs()){
+                message += "\n" + sub_repository.findByid(sub_id).getTitle();
+            }
+            message += "\n" +  "Передайте в данных Саббредитах права главного админа другому пользователю. ";
+            return message;
+        }
+        else if (service.deleteUser(CURRENT.getId())){
+            CURRENT.logOut();
+            return "Пользователь успешно удалён.";
+        }
+        return "Вы не вошли в аккаунт, чтобы его удалять...";
     }
 
     @GetMapping("/current")

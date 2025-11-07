@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.example.Breddit.models.CurrentUser;
 import com.example.Breddit.models.User;
 import com.example.Breddit.repository.PostReposiroty;
+import com.example.Breddit.repository.SubRepository;
 import com.example.Breddit.repository.UserReposiotry;
+import com.example.Breddit.service.SubService;
 //import com.example.Breddit.repository.NJO.UserNJO;
 import com.example.Breddit.service.UsersService;
 
@@ -31,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 public class UsersServiceJPA implements UsersService{
     private final UserReposiotry repository;
     private final PostReposiroty post_repository;
+    private final SubRepository sub_repository;
 
     
     @Override
@@ -70,7 +73,10 @@ public class UsersServiceJPA implements UsersService{
     public boolean deleteUser(Long id)
     {
         if (repository.findUserByid(id) != null) {
-            for (Long post: repository.findUserByid(id).getPosts()) post_repository.deleteByid(post);
+            for (Long post: repository.findUserByid(id).getPosts()) {
+                sub_repository.findByid(post_repository.findByid(post).getSub_id()).deletePost(post);
+                post_repository.deleteByid(post);
+            }
         
             repository.deleteByid(id); 
             return true;

@@ -57,7 +57,6 @@ public class PostController {
         
         service.addPost(post, title);
         
-        System.out.println(post.getTitle().split("") + "=="+post.getTitle().split("").length + "==" + (post.getTitle().split("").length == 0));
         return "Пост успешно добавлен!"; 
         }
         

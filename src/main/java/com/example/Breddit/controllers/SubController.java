@@ -3,7 +3,7 @@ package com.example.Breddit.controllers;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-
+import java.util.Map;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -53,17 +53,15 @@ public class SubController {
         
     }
 
-    @PatchMapping("/update_subbreddit")
-    public String updateSub(@RequestBody Long id, @RequestBody String title, @RequestBody String description){
-         if (user_controller.CURRENT.getId() == null) return "Необходимо войти в аккаунт, чтобы обновить саббреддит!";
+    @PatchMapping("/update_subbreddit/{id}")
+    public String updateSub(@PathVariable Long id, @RequestBody Map<String, String> updating){
+        if (user_controller.CURRENT.getId() == null) return "Необходимо войти в аккаунт, чтобы обновить саббреддит!";
+
+        else if (service.findById(id) == null) return "Саббреддита с таким id не существует!";
 
         else if (!(user_controller.CURRENT.getId().equals(service.findById(id).getMain_admin()) ||
         service.findById(id).getAdmins().contains(user_controller.CURRENT.getId()))) return "У вас нет прав администратора, чтобы обновить данный Саббреддит!";
-        Sub sub = service.findById(id);
-        sub.setTitle(title);
-        sub.setDescription(description);
-        service.addSub(sub);
-        sub = null;
+        service.updateSub(id, updating);
         return "Саббреддит успешно обновлён!";
     }
 
@@ -76,14 +74,15 @@ public class SubController {
     public String deleteSub(@PathVariable Long id){
         if (user_controller.CURRENT.getId() == null) return "Необходимо войти в аккаунт, чтобы удалить саббреддит!";
 
-        else if (!(user_controller.CURRENT.getId().equals(service.findById(id).getMain_admin()) ||
-        service.findById(id).getAdmins().contains(user_controller.CURRENT.getId()))) return "У вас нет прав администратора, чтобы удалить данный Саббреддит!";
+        else if (service.findById(id) == null) return "Саббреддита с таким id не существует!";
 
-        if (service.deleteSub(id)) return "Саббреддит успешно удалён!";
-        return "Саббреддита с таким id не существует!";
+        else if (!(user_controller.CURRENT.getId().equals(service.findById(id).getMain_admin()))) return "У вас нет прав главного администратора, чтобы удалить данный Саббреддит!";
+
+        service.deleteSub(id);
+        return "Саббреддит успешно удалён!";
     }
 
-    @PutMapping("/{title}/add_admin/{id}")
+    @PostMapping("/{title}/add_admin/{id}")
     public String addAdmin(@PathVariable String title, @PathVariable Long id){
         if (user_controller.CURRENT.getId() == null) return "Необходимо войти в аккаунт, чтобы добавить нового админа Саббреддита!";
 
@@ -93,7 +92,7 @@ public class SubController {
         return "".format("Теперь %s часть команды.", user_controller.findUserbyId(id).getNickname());
     }
 
-    @PutMapping("/{title}/remove_admin/{id}")
+    @DeleteMapping("/{title}/remove_admin/{id}")
     public String removeAdmin(@PathVariable String title, @PathVariable Long id){
         if (user_controller.CURRENT.getId() == null) return "Необходимо войти в аккаунт, чтобы удалить админа Саббреддита!";
 
@@ -102,4 +101,16 @@ public class SubController {
         service.removeAdmin(service.findByTitle(title).getId(), id);
         return "".format("Теперь %s изгнан из вышего уютного уголка.", user_controller.findUserbyId(id).getNickname());
     }
+
+    @PutMapping("/{title}/transfer/{id}")
+    public String transferCrown(@PathVariable String title, @PathVariable Long id){
+        if (user_controller.CURRENT.getId() == null) return "Необходимо войти в аккаунт, чтобы передать права главного админа Саббреддита!";
+        
+        else if (!(user_controller.CURRENT.getId().equals(service.findByTitle(title).getMain_admin()))) return "У вас нет прав главного администратора, чтобы передать права на этот Саббреддит!";
+        
+        service.transferCrown(service.findByTitle(title).getId(), id);
+        return "".format("Теперь %s хозяин сея Саббреддита.", user_controller.findUserbyId(id).getNickname());
+    }
+
+    
 }

@@ -18,7 +18,7 @@ import java.lang.reflect.Modifier;
 @MappedSuperclass
 @Getter
 @Setter
-public abstract class UserTemplate {
+public abstract class UserTemplate extends OperationsWithPost{
  
     private String nickname;
     private String password;
@@ -35,27 +35,28 @@ public abstract class UserTemplate {
         return Period.between(date_of_birth, LocalDate.now()).getYears();
      }
     
-    private ArrayList<Long> posts = new ArrayList<Long>();
+    private ArrayList<Long> admined_subs = new ArrayList<Long>();
+    
 
-    public void addPost(Long id){
-        ArrayList<Long> my_posts = this.getPosts();
-        System.out.println(my_posts);
-        my_posts.add(id);
-        this.setPosts(my_posts);
-        my_posts = null;
+    public void addAdminedSub(Long id){
+        ArrayList<Long> my_subs = this.getAdmined_subs();
+        System.out.println(my_subs);
+        my_subs.add(id);
+        System.out.println(id);
+        System.out.println(my_subs);
+        this.setAdmined_subs(my_subs);
+        System.out.println(this.getAdmined_subs());
+        my_subs = null;
     }
     
-    public void deletePost(Long id){
-        ArrayList<Long> my_posts = this.getPosts();
-        System.out.println(my_posts);
-        my_posts.remove(id);
-        this.setPosts(my_posts);
-        my_posts = null;
-    }
-    
+    public void deleteAdminedSub(Long id){
+        ArrayList<Long> my_subs = this.getAdmined_subs();
+        my_subs.remove(id);
+        this.setAdmined_subs(my_subs);
+        my_subs = null;
     }
 
-
+}
 
     
 

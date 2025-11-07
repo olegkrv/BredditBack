@@ -25,7 +25,7 @@ public class Post {
     private String title;
     private String description;
     private Long author;
-    // private Long sub_id;
+    private Long sub_id;
     private Instant date;
 }
 

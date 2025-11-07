@@ -35,8 +35,11 @@ public class PostServiceJPA implements PostService{
 
     @Override
     public void addPost(Post post, String title){
+        Sub this_sub = sub_service.findByTitle(title);
+
         post.setAuthor(user_controller.CURRENT.getId());
         post.setDate(Instant.now());
+        post.setSub_id(this_sub.getId());
 
         Long new_post_id = reposiroty.save(post).getId();
 
@@ -47,11 +50,12 @@ public class PostServiceJPA implements PostService{
         user_service.updateUser(posting_man);
         posting_man = null;
         
-        Sub this_sub = sub_service.findByTitle(title);
+        
         this_sub.addPost(new_post_id);
-        sub_service.updateSub(this_sub);
+        sub_service.fullUpdate(this_sub);
         this_sub = null;
-          
+        
+        new_post_id = null;
     }
 
     @Override
@@ -68,6 +72,7 @@ public class PostServiceJPA implements PostService{
     public boolean deletePost(Long id){
         try{
            user_service.findUserbyId(reposiroty.findByid(id).getAuthor()).deletePost(id);
+           sub_service.findById(reposiroty.findByid(id).getSub_id()).deletePost(id);
         reposiroty.deleteByid(id);
         return true; 
         }

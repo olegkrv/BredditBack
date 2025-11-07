@@ -30,6 +30,5 @@ public class User extends UserTemplate{
         super();
     }
     
-    
 
 } 

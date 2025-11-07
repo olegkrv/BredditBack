@@ -12,7 +12,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "SubBreddits")
-public class Sub {
+public class Sub extends OperationsWithPost{
     public Sub() {super();}
 
     @Id
@@ -24,12 +24,4 @@ public class Sub {
     private ArrayList<Long> posts = new ArrayList<Long>();
     private Long main_admin; 
     private ArrayList<Long> admins = new ArrayList<Long>();
-
-    public void addPost(Long id){
-        ArrayList<Long> my_posts = this.getPosts();
-        System.out.println(my_posts);
-        my_posts.add(id);
-        this.setPosts(my_posts);
-        my_posts = null;
-    }
 }

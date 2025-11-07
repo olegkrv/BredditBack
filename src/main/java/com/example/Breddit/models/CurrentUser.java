@@ -50,7 +50,10 @@ public class CurrentUser extends UserTemplate{
             System.out.println("Ошибка доступа: " + ill);
         }
     
-    }}
+    }
+    Field my_field = null;
+    Field other_field = null;
+}
     
 
     public void logOut(){
@@ -114,14 +117,6 @@ public class CurrentUser extends UserTemplate{
         return data;
     }
 
-          
-    
-
-        /*
-        setNickname(user.getNickname());
-        setPassword(user.getPassword());
-        setEmail(user.getEmail());
-        setDate_of_birth(user.getDate_of_birth());*/
 
     
 }
